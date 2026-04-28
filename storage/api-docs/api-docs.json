@@ -1,0 +1,47 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API SakuKampus PBM",
+        "description": "Dokumentasi Swagger UI untuk testing endpoint API Laravel 12",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/ping": {
+            "get": {
+                "tags": [
+                    "Testing"
+                ],
+                "summary": "Ping endpoint untuk test koneksi API",
+                "operationId": "pingApi",
+                "responses": {
+                    "200": {
+                        "description": "Response berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "pong"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "example": "2026-04-28T12:00:00+00:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Testing",
+            "description": "Testing"
+        }
+    ]
+}
