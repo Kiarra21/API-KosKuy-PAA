@@ -13,18 +13,11 @@ return new class extends Migration
     {
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade');
-            $table->string('room_number');
-            $table->text('description');
-            $table->decimal('price_per_month', 10, 2);
-            $table->enum('status', ['tersedia', 'penuh'])->default('tersedia');
+            $table->foreignId('room_type_id')->constrained()->onDelete('cascade');
+            $table->integer('number');
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_filled')->default(false);
             $table->timestamps();
-            
-            $table->unique(['branch_id', 'room_number']);
-            $table->index('branch_id');
-            $table->index('status');
-            $table->index('price_per_month');
         });
     }
 

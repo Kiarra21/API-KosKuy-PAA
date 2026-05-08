@@ -5,7 +5,7 @@ namespace App\Swagger;
 use OpenApi\Attributes as OA;
 
 #[OA\Info(
-    title: 'API SakuKampus PBM',
+    title: 'API KosKuy PAA',
     version: '1.0.0',
     description: 'Dokumentasi Swagger UI untuk testing endpoint API Laravel 12'
 )]

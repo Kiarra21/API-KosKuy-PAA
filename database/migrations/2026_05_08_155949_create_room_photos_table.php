@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('facilities', function (Blueprint $table) {
+        Schema::create('room_photos', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('icon')->nullable();
+            $table->foreignId('room_type_id')->constrained()->onDelete('cascade');
+            $table->string('photo');
+            $table->integer('order');
             $table->timestamps();
-            
-            $table->unique('name');
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('facilities');
+        Schema::dropIfExists('room_photos');
     }
 };

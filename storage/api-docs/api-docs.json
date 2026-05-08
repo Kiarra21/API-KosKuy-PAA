@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API SakuKampus PBM",
+        "title": "API KosKuy PAA",
         "description": "Dokumentasi Swagger UI untuk testing endpoint API Laravel 12",
         "version": "1.0.0"
     },

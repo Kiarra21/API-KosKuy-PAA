@@ -15,8 +15,8 @@ return new class extends Migration
             $table->enum('role', ['admin', 'pemilik_kos', 'customer'])->default('customer')->after('email');
             $table->string('phone')->nullable()->after('role');
             $table->text('address')->nullable()->after('phone');
-            $table->string('profile_photo_path')->nullable()->after('address');
-            $table->boolean('is_active')->default(true)->after('profile_photo_path');
+            $table->string('profile_picture')->nullable()->after('address');
+            $table->boolean('is_active')->default(true)->after('profile_picture');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'phone', 'address', 'profile_photo_path', 'is_active']);
+            $table->dropColumn(['role', 'phone', 'address', 'profile_picture', 'is_active']);
         });
     }
 };
