@@ -1,0 +1,12 @@
+---
+deployment:
+  tasks:
+    - export REPOPATH=/home/kiarrapr/repositories/API-KosKuy-PAA
+    - export DEPLOYPATH=/home/kiarrapr/apikoskuy.kiarrapro.id
+
+    - /bin/cp -R $REPOPATH/public/* $DEPLOYPATH
+
+    - /usr/local/bin/php $REPOPATH/artisan config:clear
+    - /usr/local/bin/php $REPOPATH/artisan cache:clear
+    - /usr/local/bin/php $REPOPATH/artisan route:clear
+    - /usr/local/bin/php $REPOPATH/artisan view:clear
