@@ -13,7 +13,11 @@ class BranchFacilityController extends Controller
     #[OA\Get(
         path: '/branches/{branch}/facilities',
         tags: ['Branches'],
-        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        summary: 'List fasilitas cabang',
+        description: 'Access: Semua user login. Menampilkan semua fasilitas yang dimiliki oleh cabang kos tertentu.',
+        operationId: 'listBranchFacilities',
+        security: [['bearerAuth' => []]],
+        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
         responses: [new OA\Response(response: 200, description: 'OK', content: new OA\JsonContent(properties: [
             new OA\Property(property: 'branch', type: 'object', properties: [new OA\Property(property: 'id', type: 'integer'), new OA\Property(property: 'name', type: 'string')]),
             new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [new OA\Property(property: 'id', type: 'integer'), new OA\Property(property: 'name', type: 'string')]))
@@ -32,11 +36,14 @@ class BranchFacilityController extends Controller
     #[OA\Post(
         path: '/branches/{branch}/facilities',
         tags: ['Branches'],
+        summary: 'Tambah fasilitas ke cabang',
+        description: 'Access: Pemilik Kos only. Menambahkan satu atau beberapa fasilitas ke cabang kos tanpa menghapus fasilitas yang sudah ada.',
+        operationId: 'attachBranchFacilities',
         security: [['bearerAuth' => []]],
-        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
-            new OA\Property(property: 'facility_id', type: 'integer'),
-            new OA\Property(property: 'facility_ids', type: 'array', items: new OA\Items(type: 'integer')),
+            new OA\Property(property: 'facility_id', type: 'integer', nullable: true, example: 1),
+            new OA\Property(property: 'facility_ids', type: 'array', nullable: true, items: new OA\Items(type: 'integer'), example: [1, 2]),
         ])),
         responses: [new OA\Response(response: 201, description: 'Created')]
     )]
@@ -66,10 +73,13 @@ class BranchFacilityController extends Controller
     #[OA\Put(
         path: '/branches/{branch}/facilities',
         tags: ['Branches'],
+        summary: 'Update fasilitas cabang',
+        description: 'Access: Pemilik Kos only. Mengganti seluruh daftar fasilitas pada cabang kos dengan daftar fasilitas baru yang dikirim.',
+        operationId: 'syncBranchFacilities',
         security: [['bearerAuth' => []]],
-        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
-        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
-            new OA\Property(property: 'facility_ids', type: 'array', items: new OA\Items(type: 'integer')),
+        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['facility_ids'], properties: [
+            new OA\Property(property: 'facility_ids', type: 'array', items: new OA\Items(type: 'integer'), example: [1, 2]),
         ])),
         responses: [new OA\Response(response: 200, description: 'Updated')]
     )]
@@ -87,10 +97,13 @@ class BranchFacilityController extends Controller
     #[OA\Delete(
         path: '/branches/{branch}/facilities',
         tags: ['Branches'],
+        summary: 'Hapus fasilitas dari cabang',
+        description: 'Access: Pemilik Kos only. Menghapus satu fasilitas dari cabang kos tertentu tanpa menghapus data fasilitas master.',
+        operationId: 'detachBranchFacility',
         security: [['bearerAuth' => []]],
-        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
-        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
-            new OA\Property(property: 'facility_id', type: 'integer'),
+        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['facility_id'], properties: [
+            new OA\Property(property: 'facility_id', type: 'integer', example: 1),
         ])),
         responses: [new OA\Response(response: 200, description: 'Deleted')]
     )]

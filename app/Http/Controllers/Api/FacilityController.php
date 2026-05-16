@@ -14,8 +14,9 @@ class FacilityController extends Controller
         path: '/facilities',
         tags: ['Facilities'],
         summary: 'List fasilitas',
-        description: 'Access: All authenticated roles (Admin, Pemilik Kos, Customer)',
+        description: 'Access: Semua user login',
         operationId: 'listFacilities',
+        security: [['bearerAuth' => []]],
         responses: [new OA\Response(response: 200, description: 'OK')]
     )]
     public function index(): JsonResponse
@@ -56,6 +57,16 @@ class FacilityController extends Controller
         ], 201);
     }
 
+    #[OA\Get(
+        path: '/facilities/{id}',
+        tags: ['Facilities'],
+        summary: 'Detail fasilitas',
+        description: 'Access: Semua user login. Menampilkan detail satu fasilitas.',
+        operationId: 'showFacility',
+        security: [['bearerAuth' => []]],
+        parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 200, description: 'OK')]
+    )]
     public function show(Facility $facility): JsonResponse
     {
         return response()->json([
@@ -74,7 +85,8 @@ class FacilityController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                properties: [new OA\Property(property: 'name', type: 'string')]
+                required: ['name'],
+                properties: [new OA\Property(property: 'name', type: 'string', example: 'WiFi')]
             )
         ),
         responses: [new OA\Response(response: 200, description: 'Updated')]

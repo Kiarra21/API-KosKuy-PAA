@@ -18,4 +18,9 @@ class Facility extends Model
     {
         return $this->belongsToMany(Branch::class, 'branch_facility')->withTimestamps();
     }
+
+    public function roomTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(RoomType::class, 'room_type_facility')->withTimestamps();
+    }
 }

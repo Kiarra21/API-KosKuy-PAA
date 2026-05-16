@@ -142,7 +142,7 @@ class AuthController extends Controller
         tags: ['Authentication'],
         summary: 'Ambil profil user login',
         operationId: 'getAuthenticatedUser',
-        description: 'Access: Authenticated users (Admin, Pemilik Kos, Customer)',
+        description: 'Access: Semua user login',
         security: [['bearerAuth' => []]],
         responses: [
             new OA\Response(response: 200, description: 'Data user login'),
@@ -161,7 +161,7 @@ class AuthController extends Controller
         tags: ['Authentication'],
         summary: 'Logout user',
         operationId: 'logoutUser',
-        description: 'Access: Authenticated users',
+        description: 'Access: Semua user login',
         security: [['bearerAuth' => []]],
         responses: [
             new OA\Response(response: 200, description: 'Logout berhasil'),
@@ -182,7 +182,7 @@ class AuthController extends Controller
         tags: ['Authentication'],
         summary: 'Refresh JWT token',
         operationId: 'refreshToken',
-        description: 'Access: Authenticated users',
+        description: 'Access: Semua user login',
         security: [['bearerAuth' => []]],
         responses: [
             new OA\Response(response: 200, description: 'Token berhasil direfresh'),
