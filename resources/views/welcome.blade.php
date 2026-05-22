@@ -1,2 +1,2 @@
-<h1>LEK ini buat dokumentasi api nya di apikoskuy.kiarrapro.id/api/documentation</h1>
-<h2>ANWAR GAY</h2>
+<h1>dokumentasi api nya di domain/api/documentation</h1>
+
