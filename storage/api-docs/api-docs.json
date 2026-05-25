@@ -271,6 +271,99 @@
                 ]
             }
         },
+        "/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Kirim kode lupa password ke email",
+                "description": "Access: Public",
+                "operationId": "forgotPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "kiarra@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Kode verifikasi berhasil dikirim"
+                    },
+                    "422": {
+                        "description": "Validasi gagal / Email tidak terdaftar"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Ubah password dengan token verifikasi",
+                "description": "Access: Public",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "kiarra@example.com"
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "passwordbaru123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "passwordbaru123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password berhasil diubah"
+                    },
+                    "422": {
+                        "description": "Validasi gagal / Token tidak valid atau kadaluwarsa"
+                    }
+                }
+            }
+        },
         "/branches": {
             "get": {
                 "tags": [
@@ -2199,6 +2292,11 @@
                                     "is_active": {
                                         "type": "boolean",
                                         "example": true
+                                    },
+                                    "branch_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -2313,6 +2411,11 @@
                                     "is_active": {
                                         "type": "boolean",
                                         "example": true
+                                    },
+                                    "branch_id": {
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
