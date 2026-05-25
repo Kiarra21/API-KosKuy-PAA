@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use OpenApi\Attributes as OA;
+use Tymon\JWTAuth\JWTGuard;
 
 class AuthController extends Controller
 {
@@ -84,7 +85,7 @@ class AuthController extends Controller
             'is_active' => true,
         ]);
 
-        $token = Auth::guard('api')->login($user);
+        $token = $this->guard()->login($user);
 
         return $this->respondWithToken($token, 201);
     }
@@ -128,7 +129,9 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! $token = Auth::guard('api')->attempt($credentials)) {
+        $token = $this->guard()->attempt($credentials);
+
+        if (! is_string($token)) {
             return response()->json([
                 'message' => 'Email atau password salah.',
             ], 401);
@@ -170,7 +173,7 @@ class AuthController extends Controller
     )]
     public function logout(): JsonResponse
     {
-        Auth::guard('api')->logout();
+        $this->guard()->logout();
 
         return response()->json([
             'message' => 'Logout berhasil.',
@@ -191,7 +194,7 @@ class AuthController extends Controller
     )]
     public function refresh(): JsonResponse
     {
-        return $this->respondWithToken(Auth::guard('api')->refresh());
+        return $this->respondWithToken($this->guard()->refresh());
     }
 
     protected function respondWithToken(string $token, int $status = 200): JsonResponse
@@ -199,8 +202,19 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,
-            'user' => Auth::guard('api')->user(),
+            'expires_in' => $this->guard()->factory()->getTTL() * 60,
+            'user' => $this->guard()->user(),
         ], $status);
+    }
+
+    protected function guard(): JWTGuard
+    {
+        $guard = Auth::guard('api');
+
+        if (! $guard instanceof JWTGuard) {
+            throw new \RuntimeException('The api guard must use the jwt driver.');
+        }
+
+        return $guard;
     }
 }
