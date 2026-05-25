@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('address')->nullable()->after('phone');
             $table->string('profile_picture')->nullable()->after('address');
             $table->boolean('is_active')->default(true)->after('profile_picture');
-            $table->foreignId('branch_id')->nullable()->after('is_active')->constrained()->onDelete('set null');
+            $table->foreignId('branch_id')->nullable()->after('is_active')->constrained()->onDelete('restrict');
         });
     }
 
