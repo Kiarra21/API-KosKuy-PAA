@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('address')->nullable()->after('phone');
             $table->string('profile_picture')->nullable()->after('address');
             $table->boolean('is_active')->default(true)->after('profile_picture');
+            $table->foreignId('branch_id')->nullable()->after('is_active')->constrained()->onDelete('set null');
         });
     }
 
@@ -26,7 +27,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'phone', 'address', 'profile_picture', 'is_active']);
+            $table->dropForeign(['branch_id']);
+            $table->dropColumn(['role', 'phone', 'address', 'profile_picture', 'is_active', 'branch_id']);
         });
     }
 };

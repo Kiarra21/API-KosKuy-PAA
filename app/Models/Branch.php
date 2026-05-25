@@ -50,4 +50,9 @@ class Branch extends Model
     {
         return $this->hasMany(BranchPhoto::class)->orderBy('order');
     }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
 }

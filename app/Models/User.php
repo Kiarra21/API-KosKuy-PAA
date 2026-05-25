@@ -28,6 +28,7 @@ class User extends Authenticatable implements JWTSubject
         'profile_picture',
         'is_active',
         'password',
+        'branch_id',
     ];
 
     /**
@@ -71,5 +72,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    public function branch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

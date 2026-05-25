@@ -72,6 +72,7 @@ class UserController extends Controller
                     new OA\Property(property: 'phone', type: 'string', nullable: true, example: '08123456789'),
                     new OA\Property(property: 'address', type: 'string', nullable: true, example: 'Jl. Mawar No. 10'),
                     new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                    new OA\Property(property: 'branch_id', type: 'integer', nullable: true, example: 1),
                 ]
             )
         ),
@@ -87,6 +88,7 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
+            'branch_id' => ['nullable', 'integer', 'exists:branches,id'],
         ]);
 
         $user = User::create($validated);
@@ -134,6 +136,7 @@ class UserController extends Controller
                     new OA\Property(property: 'phone', type: 'string', nullable: true, example: '08123456789'),
                     new OA\Property(property: 'address', type: 'string', nullable: true, example: 'Jl. Mawar No. 10'),
                     new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                    new OA\Property(property: 'branch_id', type: 'integer', nullable: true, example: 1),
                 ]
             )
         ),
@@ -149,6 +152,7 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
+            'branch_id' => ['nullable', 'integer', 'exists:branches,id'],
         ]);
 
         $user->update($validated);
