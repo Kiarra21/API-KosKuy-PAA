@@ -88,7 +88,7 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
-            'branch_id' => ['nullable', 'integer', 'exists:branches,id'],
+            'branch_id' => ['nullable', 'integer', 'exists:branches,id,deleted_at,NULL'],
         ]);
 
         $user = User::create($validated);
@@ -152,7 +152,7 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
-            'branch_id' => ['nullable', 'integer', 'exists:branches,id'],
+            'branch_id' => ['nullable', 'integer', 'exists:branches,id,deleted_at,NULL'],
         ]);
 
         $user->update($validated);
@@ -175,10 +175,6 @@ class UserController extends Controller
     )]
     public function destroy(User $user): JsonResponse
     {
-        if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
-        }
-
         $user->delete();
 
         return response()->json([

@@ -77,7 +77,7 @@ class RoomController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'room_type_id' => ['required', 'integer', 'exists:room_types,id'],
+            'room_type_id' => ['required', 'integer', 'exists:room_types,id,deleted_at,NULL'],
             'number' => [
                 'required',
                 'integer',
@@ -139,7 +139,7 @@ class RoomController extends Controller
         $roomTypeId = $request->integer('room_type_id') ?: $room->room_type_id;
 
         $validated = $request->validate([
-            'room_type_id' => ['sometimes', 'required', 'integer', 'exists:room_types,id'],
+            'room_type_id' => ['sometimes', 'required', 'integer', 'exists:room_types,id,deleted_at,NULL'],
             'number' => [
                 'sometimes',
                 'required',

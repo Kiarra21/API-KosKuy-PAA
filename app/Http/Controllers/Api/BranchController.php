@@ -179,10 +179,6 @@ class BranchController extends Controller
 
     public function destroy(Branch $branch): JsonResponse
     {
-        if ($branch->qris_code) {
-            Storage::disk('public')->delete($branch->qris_code);
-        }
-
         $branch->delete();
 
         return response()->json([
