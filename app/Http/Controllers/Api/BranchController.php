@@ -58,6 +58,12 @@ class BranchController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if ($request->has('is_active')) {
+            $request->merge([
+                'is_active' => filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
+            ]);
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
@@ -127,6 +133,12 @@ class BranchController extends Controller
 
     public function update(Request $request, Branch $branch): JsonResponse
     {
+        if ($request->has('is_active')) {
+            $request->merge([
+                'is_active' => filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
+            ]);
+        }
+
         $validated = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['sometimes', 'required', 'string'],
