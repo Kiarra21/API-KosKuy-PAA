@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -179,14 +180,130 @@ class BranchController extends Controller
 
     public function destroy(Branch $branch): JsonResponse
     {
-        if ($branch->qris_code) {
-            Storage::disk('public')->delete($branch->qris_code);
-        }
-
         $branch->delete();
 
         return response()->json([
             'message' => 'Cabang berhasil dihapus.',
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/branches/{branch}/admins',
+        tags: ['Branches'],
+        summary: 'List admin cabang',
+        description: 'Access: Pemilik Kos only. Menampilkan admin yang sudah terhubung ke cabang ini.',
+        operationId: 'listBranchAdmins',
+        security: [['bearerAuth' => []]],
+        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 200, description: 'OK')]
+    )]
+    public function admins(Branch $branch): JsonResponse
+    {
+        $admins = User::query()
+            ->where('role', 'admin')
+            ->where('branch_id', $branch->id)
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $admins,
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/branches/{branch}/admins/available',
+        tags: ['Branches'],
+        summary: 'List admin tersedia',
+        description: 'Access: Pemilik Kos only. Menampilkan admin yang belum punya branch.',
+        operationId: 'listAvailableBranchAdmins',
+        security: [['bearerAuth' => []]],
+        parameters: [new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))],
+        responses: [new OA\Response(response: 200, description: 'OK')]
+    )]
+    public function availableAdmins(Branch $branch): JsonResponse
+    {
+        $admins = User::query()
+            ->where('role', 'admin')
+            ->whereNull('branch_id')
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $admins,
+        ]);
+    }
+
+    #[OA\Post(
+        path: '/branches/{branch}/admins/{user}',
+        tags: ['Branches'],
+        summary: 'Tambah admin ke cabang',
+        description: 'Access: Pemilik Kos only. Menautkan user role admin yang masih kosong branch-nya ke cabang ini.',
+        operationId: 'attachBranchAdmin',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'Updated')]
+    )]
+    public function attachAdmin(Branch $branch, User $user): JsonResponse
+    {
+        if ($user->role !== 'admin') {
+            return response()->json([
+                'message' => 'User harus memiliki role admin.',
+            ], 422);
+        }
+
+        if ($user->branch_id !== null && (int) $user->branch_id !== (int) $branch->id) {
+            return response()->json([
+                'message' => 'Admin sudah terhubung ke cabang lain.',
+            ], 422);
+        }
+
+        $user->update([
+            'branch_id' => $branch->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Admin berhasil ditambahkan ke cabang.',
+            'data' => $user->refresh(),
+        ]);
+    }
+
+    #[OA\Delete(
+        path: '/branches/{branch}/admins/{user}',
+        tags: ['Branches'],
+        summary: 'Hapus admin dari cabang',
+        description: 'Access: Pemilik Kos only. Mengosongkan branch_id pada admin yang terhubung ke cabang ini.',
+        operationId: 'detachBranchAdmin',
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(name: 'branch', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'user', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [new OA\Response(response: 200, description: 'Deleted')]
+    )]
+    public function detachAdmin(Branch $branch, User $user): JsonResponse
+    {
+        if ($user->role !== 'admin') {
+            return response()->json([
+                'message' => 'User harus memiliki role admin.',
+            ], 422);
+        }
+
+        if ((int) $user->branch_id !== (int) $branch->id) {
+            return response()->json([
+                'message' => 'Admin tidak terhubung ke cabang ini.',
+            ], 422);
+        }
+
+        $user->update([
+            'branch_id' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Admin berhasil dihapus dari cabang.',
+            'data' => $user->refresh(),
         ]);
     }
 }
