@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
 	Route::post('/register', [AuthController::class, 'register']);
 	Route::post('/login', [AuthController::class, 'login']);
+	Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+	Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 	Route::middleware('auth:api')->group(function () {
 		Route::get('/me', [AuthController::class, 'me']);
 		Route::post('/logout', [AuthController::class, 'logout']);
@@ -58,6 +60,10 @@ Route::middleware('auth:api')->group(function () {
 		Route::put('customers/{customer}/status', [CustomerController::class, 'updateStatus']);
 		Route::apiResource('users', UserController::class);
 		Route::apiResource('branches', BranchController::class)->only(['store', 'update', 'destroy']);
+		Route::get('branches/{branch}/admins', [BranchController::class, 'admins']);
+		Route::get('branches/{branch}/admins/available', [BranchController::class, 'availableAdmins']);
+		Route::post('branches/{branch}/admins/{user}', [BranchController::class, 'attachAdmin']);
+		Route::delete('branches/{branch}/admins/{user}', [BranchController::class, 'detachAdmin']);
 		Route::apiResource('facilities', FacilityController::class)->only(['store', 'update', 'destroy']);
 		Route::post('branches/{branch}/facilities', [BranchFacilityController::class, 'store']);
 		Route::put('branches/{branch}/facilities', [BranchFacilityController::class, 'update']);

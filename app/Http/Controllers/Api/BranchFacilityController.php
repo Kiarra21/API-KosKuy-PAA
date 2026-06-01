@@ -50,9 +50,9 @@ class BranchFacilityController extends Controller
     public function store(Request $request, Branch $branch): JsonResponse
     {
         $data = $request->validate([
-            'facility_id' => ['sometimes', 'integer', 'exists:facilities,id'],
+            'facility_id' => ['sometimes', 'integer', 'exists:facilities,id,deleted_at,NULL'],
             'facility_ids' => ['sometimes', 'array'],
-            'facility_ids.*' => ['integer', 'exists:facilities,id'],
+            'facility_ids.*' => ['integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $ids = [];
@@ -87,7 +87,7 @@ class BranchFacilityController extends Controller
     {
         $data = $request->validate([
             'facility_ids' => ['required', 'array'],
-            'facility_ids.*' => ['integer', 'exists:facilities,id'],
+            'facility_ids.*' => ['integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $branch->facilities()->sync(array_values(array_unique($data['facility_ids'])));
@@ -110,7 +110,7 @@ class BranchFacilityController extends Controller
     public function destroy(Request $request, Branch $branch): JsonResponse
     {
         $data = $request->validate([
-            'facility_id' => ['required', 'integer', 'exists:facilities,id'],
+            'facility_id' => ['required', 'integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $branch->facilities()->detach($data['facility_id']);

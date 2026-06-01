@@ -73,14 +73,14 @@ class RoomTypeController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'branch_id' => ['required', 'integer', 'exists:branches,id'],
+            'branch_id' => ['required', 'integer', 'exists:branches,id,deleted_at,NULL'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'room_size' => ['required', 'integer', 'min:1'],
             'is_active' => ['sometimes', 'boolean'],
             'facility_ids' => ['sometimes', 'array'],
-            'facility_ids.*' => ['integer', 'exists:facilities,id'],
+            'facility_ids.*' => ['integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $facilityIds = $validated['facility_ids'] ?? [];
@@ -142,14 +142,14 @@ class RoomTypeController extends Controller
     public function update(Request $request, RoomType $roomType): JsonResponse
     {
         $validated = $request->validate([
-            'branch_id' => ['sometimes', 'required', 'integer', 'exists:branches,id'],
+            'branch_id' => ['sometimes', 'required', 'integer', 'exists:branches,id,deleted_at,NULL'],
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['sometimes', 'required', 'string'],
             'price' => ['sometimes', 'required', 'numeric', 'min:0'],
             'room_size' => ['sometimes', 'required', 'integer', 'min:1'],
             'is_active' => ['sometimes', 'boolean'],
             'facility_ids' => ['sometimes', 'array'],
-            'facility_ids.*' => ['integer', 'exists:facilities,id'],
+            'facility_ids.*' => ['integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $hasFacilityIds = array_key_exists('facility_ids', $validated);

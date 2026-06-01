@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('room_type_id')->constrained()->onDelete('cascade');
-            $table->foreignId('room_id')->constrained()->onDelete('cascade');
-            $table->foreignId('assigned_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('user_id')->constrained()->onDelete('restrict');
+            $table->foreignId('room_type_id')->constrained()->onDelete('restrict');
+            $table->foreignId('room_id')->constrained()->onDelete('restrict');
+            $table->foreignId('assigned_by')->nullable()->constrained('users')->onDelete('restrict');
             $table->timestamp('assigned_at')->nullable();
             $table->date('check_in_date');
             $table->date('check_out_date');
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->default('pending');
             $table->text('notes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
