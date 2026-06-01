@@ -48,9 +48,9 @@ class RoomTypeFacilityController extends Controller
     public function store(Request $request, RoomType $roomType): JsonResponse
     {
         $data = $request->validate([
-            'facility_id' => ['sometimes', 'integer', 'exists:facilities,id'],
+            'facility_id' => ['sometimes', 'integer', 'exists:facilities,id,deleted_at,NULL'],
             'facility_ids' => ['sometimes', 'array'],
-            'facility_ids.*' => ['integer', 'exists:facilities,id'],
+            'facility_ids.*' => ['integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $ids = [];
@@ -94,7 +94,7 @@ class RoomTypeFacilityController extends Controller
     {
         $data = $request->validate([
             'facility_ids' => ['required', 'array'],
-            'facility_ids.*' => ['integer', 'exists:facilities,id'],
+            'facility_ids.*' => ['integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $roomType->facilities()->sync(array_values(array_unique($data['facility_ids'])));
@@ -121,7 +121,7 @@ class RoomTypeFacilityController extends Controller
     public function destroy(Request $request, RoomType $roomType): JsonResponse
     {
         $data = $request->validate([
-            'facility_id' => ['required', 'integer', 'exists:facilities,id'],
+            'facility_id' => ['required', 'integer', 'exists:facilities,id,deleted_at,NULL'],
         ]);
 
         $roomType->facilities()->detach($data['facility_id']);
