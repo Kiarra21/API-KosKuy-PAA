@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\RoomTypeFacilityController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\CheckInOutController;
 use Illuminate\Support\Facades\Route;
 
  
@@ -65,6 +66,8 @@ Route::middleware('auth:api')->group(function () {
 		Route::post('bookings/{booking}/confirm', [BookingController::class, 'confirm']);
 		Route::post('payments/{payment}/approve', [PaymentController::class, 'approve']);
 		Route::post('payments/{payment}/reject', [PaymentController::class, 'reject']);
+		Route::post('bookings/{booking}/check-in', [CheckInOutController::class, 'checkIn']);
+		Route::post('bookings/{booking}/check-out', [CheckInOutController::class, 'checkOut']);
 	});
 
 	Route::middleware('role:pemilik_kos')->group(function () {
