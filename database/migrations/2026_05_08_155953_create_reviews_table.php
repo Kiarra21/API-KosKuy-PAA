@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained()->onDelete('restrict');
-            $table->foreignId('user_id')->constrained()->onDelete('restrict');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('rating');
             $table->text('comment')->nullable();
             $table->boolean('invisible')->default(false);

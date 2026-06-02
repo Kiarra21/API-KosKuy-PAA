@@ -47,4 +47,9 @@ class RoomType extends Model
     {
         return $this->hasMany(RoomPhoto::class)->orderBy('order');
     }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

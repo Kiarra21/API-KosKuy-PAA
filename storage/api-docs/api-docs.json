@@ -364,6 +364,215 @@
                 }
             }
         },
+        "/bookings": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Daftar pemesanan",
+                "description": "Access: Semua user login. Customer hanya melihat pesanan sendiri, Admin melihat pesanan di cabangnya, Pemilik melihat semua.",
+                "operationId": "listBookings",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "confirmed",
+                                "cancelled",
+                                "completed"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Buat pemesanan baru",
+                "description": "Access: Customer (untuk diri sendiri), Admin/Pemilik (bisa memesankan untuk customer lain).",
+                "operationId": "createBooking",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "room_type_id",
+                                    "check_in_date",
+                                    "check_out_date"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID User Customer (wajib jika pemesan adalah Admin/Pemilik)",
+                                        "type": "integer"
+                                    },
+                                    "room_type_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "check_in_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-10"
+                                    },
+                                    "check_out_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-17"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Minta lantai bawah",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "422": {
+                        "description": "Validasi gagal / Kamar penuh"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Detail pemesanan",
+                "description": "Access: Semua user login. Customer hanya melihat pesanan sendiri, Admin melihat pesanan di cabangnya, Pemilik melihat semua.",
+                "operationId": "showBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/bookings/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Batalkan pemesanan",
+                "description": "Access: Customer (untuk pesanan sendiri yang masih pending/confirmed), Admin/Pemilik (untuk semua pesanan).",
+                "operationId": "cancelBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/bookings/{id}/confirm": {
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Konfirmasi pemesanan dan alokasi kamar",
+                "description": "Access: Admin (untuk cabangnya), Pemilik Kos (untuk semua cabang). Menentukan nomor kamar fisik.",
+                "operationId": "confirmBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "room_id"
+                                ],
+                                "properties": {
+                                    "room_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validasi gagal / Kamar tidak tersedia"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/branches": {
             "get": {
                 "tags": [
@@ -566,6 +775,140 @@
                 "parameters": [
                     {
                         "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/branches/{branch}/admins": {
+            "get": {
+                "tags": [
+                    "Branches"
+                ],
+                "summary": "List admin cabang",
+                "description": "Access: Pemilik Kos only. Menampilkan admin yang sudah terhubung ke cabang ini.",
+                "operationId": "listBranchAdmins",
+                "parameters": [
+                    {
+                        "name": "branch",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/branches/{branch}/admins/available": {
+            "get": {
+                "tags": [
+                    "Branches"
+                ],
+                "summary": "List admin tersedia",
+                "description": "Access: Pemilik Kos only. Menampilkan admin yang belum punya branch.",
+                "operationId": "listAvailableBranchAdmins",
+                "parameters": [
+                    {
+                        "name": "branch",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/branches/{branch}/admins/{user}": {
+            "post": {
+                "tags": [
+                    "Branches"
+                ],
+                "summary": "Tambah admin ke cabang",
+                "description": "Access: Pemilik Kos only. Menautkan user role admin yang masih kosong branch-nya ke cabang ini.",
+                "operationId": "attachBranchAdmin",
+                "parameters": [
+                    {
+                        "name": "branch",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Branches"
+                ],
+                "summary": "Hapus admin dari cabang",
+                "description": "Access: Pemilik Kos only. Mengosongkan branch_id pada admin yang terhubung ke cabang ini.",
+                "operationId": "detachBranchAdmin",
+                "parameters": [
+                    {
+                        "name": "branch",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "user",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -971,6 +1314,114 @@
                 ]
             }
         },
+        "/bookings/{id}/check-in": {
+            "post": {
+                "tags": [
+                    "Check-In-Out"
+                ],
+                "summary": "Proses Check-In",
+                "description": "Access: Admin (untuk cabangnya), Pemilik Kos (untuk semua cabang). Melakukan check-in pelanggan.",
+                "operationId": "checkInBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "check_in_photo": {
+                                        "description": "Foto saat check-in",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "notes": {
+                                        "description": "Catatan tambahan",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validasi gagal / Tanggal belum sesuai / Status bukan confirmed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/bookings/{id}/check-out": {
+            "post": {
+                "tags": [
+                    "Check-In-Out"
+                ],
+                "summary": "Proses Check-Out",
+                "description": "Access: Admin (untuk cabangnya), Pemilik Kos (untuk semua cabang). Melakukan check-out pelanggan, membebaskan kamar, dan mengubah status booking menjadi completed.",
+                "operationId": "checkOutBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "check_out_photo": {
+                                        "description": "Foto saat check-out",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "notes": {
+                                        "description": "Catatan tambahan",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validasi gagal / Belum check-in"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/customers": {
             "get": {
                 "tags": [
@@ -1244,6 +1695,138 @@
                 "responses": {
                     "200": {
                         "description": "Deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/payments/submit": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Submit bukti pembayaran",
+                "description": "Access: Customer (untuk pesanannya sendiri). Mengunggah bukti transfer pembayaran.",
+                "operationId": "submitPayment",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "booking_id",
+                                    "proof_image"
+                                ],
+                                "properties": {
+                                    "booking_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "proof_image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/payments/{id}/approve": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Setujui pembayaran",
+                "description": "Access: Admin (untuk cabangnya), Pemilik Kos (untuk semua cabang). Mengubah status pembayaran menjadi paid.",
+                "operationId": "approvePayment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/payments/{id}/reject": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Tolak pembayaran",
+                "description": "Access: Admin (untuk cabangnya), Pemilik Kos (untuk semua cabang). Mengubah status pembayaran menjadi failed.",
+                "operationId": "rejectPayment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "rejection_reason"
+                                ],
+                                "properties": {
+                                    "rejection_reason": {
+                                        "type": "string",
+                                        "example": "Gambar bukti bayar blur atau nominal tidak sesuai"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
                     }
                 },
                 "security": [
@@ -2481,8 +3064,16 @@
             "description": "Authentication"
         },
         {
+            "name": "Bookings",
+            "description": "Bookings"
+        },
+        {
             "name": "Branches",
             "description": "Branches"
+        },
+        {
+            "name": "Check-In-Out",
+            "description": "Check-In-Out"
         },
         {
             "name": "Users",
@@ -2491,6 +3082,10 @@
         {
             "name": "Facilities",
             "description": "Facilities"
+        },
+        {
+            "name": "Payments",
+            "description": "Payments"
         },
         {
             "name": "Profile",
