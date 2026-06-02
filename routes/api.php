@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\RoomPhotoController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\RoomTypeFacilityController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\BookingController;
 use Illuminate\Support\Facades\Route;
 
  
@@ -44,6 +45,10 @@ Route::middleware('auth:api')->group(function () {
 	Route::get('room-types/{roomType}/facilities', [RoomTypeFacilityController::class, 'index']);
 	Route::get('room-types/{roomType}/photos', [RoomPhotoController::class, 'index']);
 
+	Route::get('bookings', [BookingController::class, 'index']);
+	Route::post('bookings', [BookingController::class, 'store']);
+	Route::get('bookings/{booking}', [BookingController::class, 'show']);
+	Route::post('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
 	Route::middleware('role:admin,pemilik_kos')->group(function () {
 		Route::apiResource('room-types', RoomTypeController::class)->only(['store', 'update', 'destroy']);
 		Route::apiResource('rooms', RoomController::class)->only(['store', 'update', 'destroy']);
