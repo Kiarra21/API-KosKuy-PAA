@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\RoomTypeFacilityController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Facades\Route;
 
  
@@ -49,6 +50,8 @@ Route::middleware('auth:api')->group(function () {
 	Route::post('bookings', [BookingController::class, 'store']);
 	Route::get('bookings/{booking}', [BookingController::class, 'show']);
 	Route::post('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+	Route::post('payments/submit', [PaymentController::class, 'submit']);
+
 	Route::middleware('role:admin,pemilik_kos')->group(function () {
 		Route::apiResource('room-types', RoomTypeController::class)->only(['store', 'update', 'destroy']);
 		Route::apiResource('rooms', RoomController::class)->only(['store', 'update', 'destroy']);
@@ -58,6 +61,10 @@ Route::middleware('auth:api')->group(function () {
 		Route::post('room-types/{roomType}/photos', [RoomPhotoController::class, 'store']);
 		Route::put('room-photos/{roomPhoto}', [RoomPhotoController::class, 'update']);
 		Route::delete('room-photos/{roomPhoto}', [RoomPhotoController::class, 'destroy']);
+
+		Route::post('bookings/{booking}/confirm', [BookingController::class, 'confirm']);
+		Route::post('payments/{payment}/approve', [PaymentController::class, 'approve']);
+		Route::post('payments/{payment}/reject', [PaymentController::class, 'reject']);
 	});
 
 	Route::middleware('role:pemilik_kos')->group(function () {
