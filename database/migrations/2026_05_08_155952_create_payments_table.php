@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('code');
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
             $table->string('proof_image')->nullable();
-            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('restrict');
-            $table->timestamp('approved_at')->nullable();
+            $table->string('rejection_reason')->nullable();
+            $table->foreignId('handled_by')->nullable()->constrained('users')->onDelete('restrict');
+            $table->timestamp('handled_at')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
