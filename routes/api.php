@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\RoomPhotoController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\RoomTypeFacilityController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ReviewController;
 use Illuminate\Support\Facades\Route;
 
  
@@ -39,8 +40,11 @@ Route::middleware('auth:api')->group(function () {
 
 	Route::get('branches/{branch}/facilities', [BranchFacilityController::class, 'index']);
 	Route::get('branches/{branch}/photos', [BranchPhotoController::class, 'index']);
+	Route::get('branches/{branch}/reviews', [ReviewController::class, 'branchReviews']);
 	Route::get('room-types/{roomType}/facilities', [RoomTypeFacilityController::class, 'index']);
 	Route::get('room-types/{roomType}/photos', [RoomPhotoController::class, 'index']);
+
+	Route::apiResource('reviews', ReviewController::class);
 
 	Route::middleware('role:admin,pemilik_kos')->group(function () {
 		Route::apiResource('room-types', RoomTypeController::class)->only(['store', 'update', 'destroy']);
@@ -51,6 +55,7 @@ Route::middleware('auth:api')->group(function () {
 		Route::post('room-types/{roomType}/photos', [RoomPhotoController::class, 'store']);
 		Route::put('room-photos/{roomPhoto}', [RoomPhotoController::class, 'update']);
 		Route::delete('room-photos/{roomPhoto}', [RoomPhotoController::class, 'destroy']);
+		Route::put('reviews/{review}/toggle-visibility', [ReviewController::class, 'toggleVisibility']);
 	});
 
 	Route::middleware('role:pemilik_kos')->group(function () {
