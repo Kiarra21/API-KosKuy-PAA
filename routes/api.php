@@ -12,9 +12,13 @@ use App\Http\Controllers\Api\RoomPhotoController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\RoomTypeFacilityController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\CheckInOutController;
 use Illuminate\Support\Facades\Route;
 
- 
+
 
 Route::prefix('auth')->group(function () {
 	Route::post('/register', [AuthController::class, 'register']);
@@ -41,8 +45,16 @@ Route::middleware('auth:api')->group(function () {
 
 	Route::get('branches/{branch}/facilities', [BranchFacilityController::class, 'index']);
 	Route::get('branches/{branch}/photos', [BranchPhotoController::class, 'index']);
+	Route::get('branches/{branch}/reviews', [ReviewController::class, 'branchReviews']);
 	Route::get('room-types/{roomType}/facilities', [RoomTypeFacilityController::class, 'index']);
 	Route::get('room-types/{roomType}/photos', [RoomPhotoController::class, 'index']);
+
+	Route::apiResource('reviews', ReviewController::class);
+	Route::get('bookings', [BookingController::class, 'index']);
+	Route::post('bookings', [BookingController::class, 'store']);
+	Route::get('bookings/{booking}', [BookingController::class, 'show']);
+	Route::post('bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+	Route::post('payments/submit', [PaymentController::class, 'submit']);
 
 	Route::middleware('role:admin,pemilik_kos')->group(function () {
 		Route::apiResource('room-types', RoomTypeController::class)->only(['store', 'update', 'destroy']);
@@ -53,6 +65,13 @@ Route::middleware('auth:api')->group(function () {
 		Route::post('room-types/{roomType}/photos', [RoomPhotoController::class, 'store']);
 		Route::put('room-photos/{roomPhoto}', [RoomPhotoController::class, 'update']);
 		Route::delete('room-photos/{roomPhoto}', [RoomPhotoController::class, 'destroy']);
+		Route::put('reviews/{review}/toggle-visibility', [ReviewController::class, 'toggleVisibility']);
+
+		Route::post('bookings/{booking}/confirm', [BookingController::class, 'confirm']);
+		Route::post('payments/{payment}/approve', [PaymentController::class, 'approve']);
+		Route::post('payments/{payment}/reject', [PaymentController::class, 'reject']);
+		Route::post('bookings/{booking}/check-in', [CheckInOutController::class, 'checkIn']);
+		Route::post('bookings/{booking}/check-out', [CheckInOutController::class, 'checkOut']);
 	});
 
 	Route::middleware('role:pemilik_kos')->group(function () {

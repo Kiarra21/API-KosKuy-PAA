@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('restrict');
             $table->foreignId('room_type_id')->constrained()->onDelete('restrict');
-            $table->foreignId('room_id')->constrained()->onDelete('restrict');
+            $table->foreignId('room_id')->nullable()->constrained()->onDelete('restrict');
             $table->foreignId('assigned_by')->nullable()->constrained('users')->onDelete('restrict');
             $table->timestamp('assigned_at')->nullable();
             $table->date('check_in_date');
