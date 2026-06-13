@@ -50,7 +50,7 @@ class PaymentController extends Controller
         $booking = Booking::findOrFail($validated['booking_id']);
 
         // Pastikan booking milik customer ini
-        if ($user->role === 'customer' && $booking->user_id !== $user->id) {
+        if ($user->role === 'customer' && (int) $booking->user_id !== (int) $user->id) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
