@@ -30,7 +30,7 @@ class BookingController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Booking::with(['user', 'roomType', 'room', 'payment']);
+        $query = Booking::with(['user', 'roomType', 'room', 'payment', 'review']);
 
         if ($user->role === 'customer') {
             $query->where('user_id', $user->id);

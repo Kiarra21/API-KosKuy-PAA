@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,18 @@ class BranchController extends Controller
                 ->with(['facilities:id,name', 'photos'])
                 ->withMin('roomTypes', 'price')
                 ->withMin('roomTypes', 'room_size')
+                ->addSelect([
+                    'reviews_avg_rating' => Review::selectRaw('ROUND(AVG(reviews.rating), 2)')
+                        ->join('bookings', 'bookings.id', '=', 'reviews.booking_id')
+                        ->join('room_types', 'room_types.id', '=', 'bookings.room_type_id')
+                        ->whereColumn('room_types.branch_id', 'branches.id')
+                        ->where('reviews.invisible', false),
+                    'reviews_count' => Review::selectRaw('COUNT(*)')
+                        ->join('bookings', 'bookings.id', '=', 'reviews.booking_id')
+                        ->join('room_types', 'room_types.id', '=', 'bookings.room_type_id')
+                        ->whereColumn('room_types.branch_id', 'branches.id')
+                        ->where('reviews.invisible', false),
+                ])
                 ->latest()
                 ->paginate(10),
         ]);
@@ -106,6 +119,17 @@ class BranchController extends Controller
         $branch->load(['facilities:id,name', 'photos']);
         $branch->loadMin('roomTypes', 'price');
         $branch->loadMin('roomTypes', 'room_size');
+
+        $reviewStats = Review::query()
+            ->join('bookings', 'bookings.id', '=', 'reviews.booking_id')
+            ->join('room_types', 'room_types.id', '=', 'bookings.room_type_id')
+            ->where('room_types.branch_id', $branch->id)
+            ->where('reviews.invisible', false)
+            ->selectRaw('ROUND(AVG(reviews.rating), 2) as avg_rating, COUNT(*) as total')
+            ->first();
+
+        $branch->setAttribute('reviews_avg_rating', (float) ($reviewStats->avg_rating ?? 0));
+        $branch->setAttribute('reviews_count', (int) ($reviewStats->total ?? 0));
 
         return response()->json([
             'data' => $branch,
