@@ -24,7 +24,12 @@ class BranchController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => Branch::query()->latest()->paginate(10),
+            'data' => Branch::query()
+                ->with(['facilities:id,name', 'photos'])
+                ->withMin('roomTypes', 'price')
+                ->withMin('roomTypes', 'room_size')
+                ->latest()
+                ->paginate(10),
         ]);
     }
 
@@ -98,6 +103,10 @@ class BranchController extends Controller
     )]
     public function show(Branch $branch): JsonResponse
     {
+        $branch->load(['facilities:id,name', 'photos']);
+        $branch->loadMin('roomTypes', 'price');
+        $branch->loadMin('roomTypes', 'room_size');
+
         return response()->json([
             'data' => $branch,
         ]);

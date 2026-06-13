@@ -26,6 +26,34 @@ class Booking extends Model
         'notes',
     ];
 
+    protected $appends = ['display_status'];
+
+    public function getDisplayStatusAttribute(): string
+    {
+        if ($this->status === 'cancelled') {
+            return 'Dibatalkan';
+        }
+        if ($this->status === 'completed') {
+            return 'Selesai';
+        }
+
+        $payment = $this->payment;
+
+        if ($payment) {
+            if ($payment->status === 'paid') {
+                if ($this->status === 'confirmed') {
+                    return 'Dikonfirmasi';
+                }
+                return 'Lunas';
+            }
+            if ($payment->status === 'pending') {
+                return 'Menunggu Verifikasi';
+            }
+        }
+
+        return 'Belum Bayar';
+    }
+
     protected $casts = [
         'check_in_date' => 'date',
         'check_out_date' => 'date',
