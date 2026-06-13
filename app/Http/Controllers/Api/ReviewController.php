@@ -217,15 +217,37 @@ class ReviewController extends Controller
     )]
     public function branchReviews(Branch $branch): JsonResponse
     {
-        $reviews = Review::whereHas('booking.roomType', function ($query) use ($branch) {
+        $baseQuery = Review::whereHas('booking.roomType', function ($query) use ($branch) {
             $query->where('branch_id', $branch->id);
-        })
-            ->where('invisible', false)
+        })->where('invisible', false);
+
+        $stats = (clone $baseQuery)
+            ->selectRaw('ROUND(AVG(rating), 2) as average_rating, COUNT(*) as total_reviews')
+            ->first();
+
+        $starCounts = (clone $baseQuery)
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+
+        $reviews = (clone $baseQuery)
             ->with(['user:id,name,profile_picture', 'booking.roomType'])
             ->latest()
             ->paginate(10);
 
         return response()->json([
+            'stats' => [
+                'average_rating' => (float) ($stats->average_rating ?? 0),
+                'total_reviews' => (int) ($stats->total_reviews ?? 0),
+                'star_counts' => [
+                    '1' => $starCounts[1] ?? 0,
+                    '2' => $starCounts[2] ?? 0,
+                    '3' => $starCounts[3] ?? 0,
+                    '4' => $starCounts[4] ?? 0,
+                    '5' => $starCounts[5] ?? 0,
+                ],
+            ],
             'data' => $reviews,
         ]);
     }
