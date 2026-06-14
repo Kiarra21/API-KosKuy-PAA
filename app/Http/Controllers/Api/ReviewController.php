@@ -62,6 +62,8 @@ class ReviewController extends Controller
     )]
     public function store(Request $request): JsonResponse
     {
+        $user = $request->user();
+
         $validated = $request->validate([
             'booking_id' => ['required', 'integer', 'exists:bookings,id'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
@@ -70,8 +72,14 @@ class ReviewController extends Controller
 
         $booking = Booking::findOrFail($validated['booking_id']);
 
+        if ($user->role !== 'customer') {
+            return response()->json([
+                'message' => 'Hanya customer yang dapat memberikan ulasan.',
+            ], 403);
+        }
+
         // Pastikan booking milik user yang login
-        if ($booking->user_id !== auth()->id()) {
+        if ((int) $booking->user_id !== (int) $user->id) {
             return response()->json([
                 'message' => 'Anda tidak memiliki akses untuk memberikan ulasan pada pemesanan ini.',
             ], 403);
@@ -93,7 +101,7 @@ class ReviewController extends Controller
 
         $review = Review::create([
             'booking_id' => $booking->id,
-            'user_id' => auth()->id(),
+            'user_id' => $user->id,
             'rating' => $validated['rating'],
             'comment' => $validated['comment'] ?? null,
             'invisible' => false,
@@ -155,7 +163,7 @@ class ReviewController extends Controller
     )]
     public function update(Request $request, Review $review): JsonResponse
     {
-        if ($review->user_id !== auth()->id()) {
+        if ((int) $review->user_id !== (int) $request->user()->id) {
             return response()->json([
                 'message' => 'Anda tidak diizinkan untuk mengubah ulasan ini.',
             ], 403);
@@ -192,7 +200,7 @@ class ReviewController extends Controller
         $user = auth()->user();
 
         // Hanya pemilik ulasan, admin, atau pemilik kos yang dapat menghapus ulasan
-        if ($review->user_id !== $user->id && $user->role !== 'admin' && $user->role !== 'pemilik_kos') {
+        if ((int) $review->user_id !== (int) $user->id && $user->role !== 'admin' && $user->role !== 'pemilik_kos') {
             return response()->json([
                 'message' => 'Anda tidak diizinkan untuk menghapus ulasan ini.',
             ], 403);

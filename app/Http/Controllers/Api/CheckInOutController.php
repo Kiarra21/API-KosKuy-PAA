@@ -194,7 +194,7 @@ class CheckInOutController extends Controller
         }
 
         if ($user->role === 'admin') {
-            if (!$user->branch_id || $booking->roomType->branch_id !== $user->branch_id) {
+            if (!$user->branch_id || (int) $booking->roomType->branch_id !== (int) $user->branch_id) {
                 abort(403, 'Unauthorized action.');
             }
         }

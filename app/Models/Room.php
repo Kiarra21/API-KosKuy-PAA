@@ -20,6 +20,7 @@ class Room extends Model
     ];
 
     protected $casts = [
+        'room_type_id' => 'integer',
         'number' => 'integer',
         'is_active' => 'boolean',
         'is_filled' => 'boolean',

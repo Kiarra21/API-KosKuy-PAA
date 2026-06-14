@@ -55,6 +55,10 @@ class Booking extends Model
     }
 
     protected $casts = [
+        'user_id' => 'integer',
+        'room_type_id' => 'integer',
+        'room_id' => 'integer',
+        'assigned_by' => 'integer',
         'check_in_date' => 'date',
         'check_out_date' => 'date',
         'assigned_at' => 'datetime',

@@ -50,7 +50,7 @@ class PaymentController extends Controller
         $booking = Booking::findOrFail($validated['booking_id']);
 
         // Pastikan booking milik customer ini
-        if ($user->role === 'customer' && $booking->user_id !== $user->id) {
+        if ($user->role === 'customer' && (int) $booking->user_id !== (int) $user->id) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
@@ -119,7 +119,7 @@ class PaymentController extends Controller
 
         // Validasi cabang admin
         if ($user->role === 'admin') {
-            if (!$user->branch_id || $booking->roomType->branch_id !== $user->branch_id) {
+            if (!$user->branch_id || (int) $booking->roomType->branch_id !== (int) $user->branch_id) {
                 return response()->json(['message' => 'Forbidden'], 403);
             }
         }
@@ -178,7 +178,7 @@ class PaymentController extends Controller
 
         // Validasi cabang admin
         if ($user->role === 'admin') {
-            if (!$user->branch_id || $booking->roomType->branch_id !== $user->branch_id) {
+            if (!$user->branch_id || (int) $booking->roomType->branch_id !== (int) $user->branch_id) {
                 return response()->json(['message' => 'Forbidden'], 403);
             }
         }
