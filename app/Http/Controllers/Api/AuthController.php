@@ -140,6 +140,14 @@ class AuthController extends Controller
             ], 401);
         }
 
+        $user = $this->guard()->user();
+        if ($user && ! $user->is_active) {
+            $this->guard()->logout();
+            return response()->json([
+                'message' => 'Akun Anda sedang nonaktif dan tidak bisa login.',
+            ], 403);
+        }
+
         return $this->respondWithToken($token);
     }
 
