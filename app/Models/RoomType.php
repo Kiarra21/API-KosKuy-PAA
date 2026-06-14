@@ -23,6 +23,7 @@ class RoomType extends Model
     ];
 
     protected $casts = [
+        'branch_id' => 'integer',
         'price' => 'decimal:2',
         'room_size' => 'integer',
         'is_active' => 'boolean',

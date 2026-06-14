@@ -296,7 +296,7 @@ class BookingController extends Controller
         $room = Room::findOrFail($validated['room_id']);
 
         // Pastikan kamar sesuai dengan tipe yang dipesan
-        if ($room->room_type_id !== $booking->room_type_id) {
+        if ((int) $room->room_type_id !== (int) $booking->room_type_id) {
             return response()->json([
                 'message' => 'Nomor kamar tidak sesuai dengan tipe kamar yang dipesan.',
             ], 422);
@@ -344,12 +344,12 @@ class BookingController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role === 'customer' && $booking->user_id !== $user->id) {
+        if ($user->role === 'customer' && (int) $booking->user_id !== (int) $user->id) {
             abort(403, 'Unauthorized action.');
         }
 
         if ($user->role === 'admin') {
-            if (!$user->branch_id || $booking->roomType->branch_id !== $user->branch_id) {
+            if (!$user->branch_id || (int) $booking->roomType->branch_id !== (int) $user->branch_id) {
                 abort(403, 'Unauthorized action.');
             }
         }

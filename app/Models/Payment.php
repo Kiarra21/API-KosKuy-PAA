@@ -24,6 +24,8 @@ class Payment extends Model
     ];
 
     protected $casts = [
+        'booking_id' => 'integer',
+        'handled_by' => 'integer',
         'handled_at' => 'datetime',
         'paid_at' => 'datetime',
     ];
