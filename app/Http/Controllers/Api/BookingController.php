@@ -30,7 +30,7 @@ class BookingController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Booking::with(['user', 'roomType', 'room', 'payment', 'review']);
+        $query = Booking::with(['user', 'roomType.branch', 'room', 'payment', 'review']);
 
         if ($user->role === 'customer') {
             $query->where('user_id', $user->id);
@@ -178,7 +178,7 @@ class BookingController extends Controller
 
         return response()->json([
             'message' => 'Pemesanan berhasil dibuat, silakan lakukan pembayaran.',
-            'data' => $booking->load(['user', 'roomType']),
+            'data' => $booking->load(['user', 'roomType.branch']),
         ], 201);
     }
 
@@ -197,7 +197,7 @@ class BookingController extends Controller
         $this->authorizeBookingAccess($booking);
 
         return response()->json([
-            'data' => $booking->load(['user', 'roomType', 'room', 'payment']),
+            'data' => $booking->load(['user', 'roomType.branch', 'room', 'payment']),
         ]);
     }
 
