@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 
 class CheckInOut extends Model
@@ -25,6 +26,8 @@ class CheckInOut extends Model
     ];
 
     protected $casts = [
+        'booking_id' => 'integer',
+        'handled_by' => 'integer',
         'checked_in_at' => 'datetime',
         'checked_out_at' => 'datetime',
     ];
@@ -36,12 +39,20 @@ class CheckInOut extends Model
 
     public function getCheckInPhotoUrlAttribute(): ?string
     {
-        return $this->check_in_photo ? Storage::disk('public')->url($this->check_in_photo) : null;
+        return $this->check_in_photo ? $this->publicStorageUrl($this->check_in_photo) : null;
     }
 
     public function getCheckOutPhotoUrlAttribute(): ?string
     {
-        return $this->check_out_photo ? Storage::disk('public')->url($this->check_out_photo) : null;
+        return $this->check_out_photo ? $this->publicStorageUrl($this->check_out_photo) : null;
+    }
+
+    private function publicStorageUrl(string $path): string
+    {
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+
+        return $disk->url($path);
     }
 
     public function booking(): BelongsTo
